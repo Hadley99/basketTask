@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { offersCheck } from "../../redux/features/cartSlice";
 import Button from "../common/Button";
 import { useDispatch } from "react-redux";
+import ButtonOutline from "../common/ButtonOutline";
 const SingleBasketItem = ({ increaseQty, product, decreaseQty }) => {
   const dispatch = useDispatch();
 
@@ -20,7 +21,7 @@ const SingleBasketItem = ({ increaseQty, product, decreaseQty }) => {
         <div>
           <Button value="+" onClick={() => increaseQty(product.id)} />
           <span className="py-2 px-4 text-xl ">{product.qty}</span>
-          <Button
+          <ButtonOutline
             value="-"
             onClick={() => {
               decreaseQty(product.id);
