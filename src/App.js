@@ -8,6 +8,7 @@ import { getAllProducts } from "./redux/features/productsSlice";
 function App() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cartItems);
+
   useEffect(() => {
     dispatch(getAllProducts());
   }, []);

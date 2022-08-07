@@ -18,18 +18,18 @@ export const cartSlice = createSlice({
         "id"
       );
 
-      let prod = currentProducts[indexOfProductToUpdate];
-      let qty = prod.qty + 1;
-      let savings = prod.savings;
+      let product = currentProducts[indexOfProductToUpdate];
+      const qty = product.qty + 1;
+      const savings = product.savings;
 
-      prod = {
-        ...prod,
-        qty: prod.qty + 1,
-        itemCost: prod.price * qty - savings,
-        subPrice: prod.price * qty,
+      product = {
+        ...product,
+        qty,
+        itemCost: product.price * qty - savings,
+        subPrice: product.price * qty,
       };
 
-      currentProducts[indexOfProductToUpdate] = prod;
+      currentProducts[indexOfProductToUpdate] = product;
       state.cartItems = currentProducts;
     },
 
@@ -125,6 +125,7 @@ export const cartSlice = createSlice({
               subPrice,
             };
           }
+
           if (cheese.qty % 2 === 0) {
             let noOfProductsFree = cheese.qty / 2;
             let priceToReduce = noOfProductsFree * cheese.price;
@@ -181,12 +182,10 @@ export const cartSlice = createSlice({
         }
       } else {
         if (bread) {
-          let savings = 0;
-          let qty = bread.qty;
-          let price = bread.price;
-          let itemCost = price * qty;
-          bread = { ...bread, savings, itemCost };
+          let itemCost = bread.price * bread.qty;
+          bread = { ...bread, savings: 0, itemCost };
           currentProducts[indexOfProductToUpdate] = bread;
+
           state.cartItems = currentProducts;
         }
       }

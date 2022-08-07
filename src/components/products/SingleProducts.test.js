@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import SingleProduct from "./SingleProduct";
 import { Provider } from "react-redux";
 import { store } from "../../store";
-import SingleBasketItem from "../basket/SingleBasketItem";
 
 describe("SingleProduct", () => {
   it("testing of add to cart button", async () => {
