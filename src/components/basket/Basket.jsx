@@ -1,7 +1,11 @@
 import React from "react";
 import SingleBasketItem from "./SingleBasketItem";
 import { useSelector, useDispatch } from "react-redux";
-import { decrementQty, incrementQty } from "../../redux/features/cartSlice";
+import {
+  decrementQty,
+  incrementQty,
+  increaseQty,
+} from "../../redux/features/cartSlice";
 import { calculateTotalSavings } from "../../utils/calcutateTotalSavings";
 import { calculateTotalItemCost } from "../../utils/calculateTotalItemCost";
 import { calculateSubTotal } from "../../utils/calculateSubTotal";
@@ -10,26 +14,13 @@ const Basket = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
 
-  const increaseQty = (p) => {
-    dispatch(incrementQty(p));
-  };
-
-  const decreaseQty = (p) => {
-    dispatch(decrementQty(p));
-  };
-
   return (
     <>
       <div>
         {/* parent wrapper */}
 
         {cartItems?.map((product) => (
-          <SingleBasketItem
-            key={product.id}
-            product={product}
-            increaseQty={increaseQty}
-            decreaseQty={decreaseQty}
-          />
+          <SingleBasketItem key={product.id} product={product} />
         ))}
       </div>
 

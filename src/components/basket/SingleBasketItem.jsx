@@ -1,9 +1,13 @@
 import React, { useEffect } from "react";
-import { offersCheck } from "../../redux/features/cartSlice";
+import {
+  decreaseQty,
+  increaseQty,
+  offersCheck,
+} from "../../redux/features/cartSlice";
 import Button from "../common/Button";
 import { useDispatch } from "react-redux";
 import ButtonOutline from "../common/ButtonOutline";
-const SingleBasketItem = ({ increaseQty, product, decreaseQty }) => {
+const SingleBasketItem = ({ product }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -19,12 +23,12 @@ const SingleBasketItem = ({ increaseQty, product, decreaseQty }) => {
           <span className="text-gray-400 ">£</span> {product.price}
         </p>
         <div>
-          <Button value="+" onClick={() => increaseQty(product.id)} />
+          <Button value="+" onClick={() => dispatch(increaseQty(product.id))} />
           <span className="py-2 px-4 text-xl ">{product.qty}</span>
           <ButtonOutline
             value="-"
             onClick={() => {
-              decreaseQty(product.id);
+              dispatch(decreaseQty(product.id));
             }}
           />
         </div>

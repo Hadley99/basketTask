@@ -10,60 +10,11 @@ export const cartSlice = createSlice({
     },
 
     incrementQty: (state, action) => {
-      const productId = action.payload;
-      const currentProducts = [...state.cartItems];
-      const indexOfProductToUpdate = findIndexOfProduct(
-        currentProducts,
-        productId,
-        "id"
-      );
-
-      let product = currentProducts[indexOfProductToUpdate];
-      const qty = product.qty + 1;
-      const savings = product.savings;
-
-      product = {
-        ...product,
-        qty,
-        itemCost: product.price * qty - savings,
-        subPrice: product.price * qty,
-      };
-
-      currentProducts[indexOfProductToUpdate] = product;
-      state.cartItems = currentProducts;
+      state.cartItems = action.payload;
     },
 
     decrementQty: (state, action) => {
-      const productId = action.payload;
-      const currentProducts = [...state.cartItems];
-      const indexOfProductToUpdate = findIndexOfProduct(
-        currentProducts,
-        productId,
-        "id"
-      );
-
-      let product = currentProducts[indexOfProductToUpdate];
-      const quantity = product.qty - 1;
-      const savings = product.savings;
-
-      if (product.qty > 0) {
-        product = {
-          ...product,
-          qty: quantity,
-          itemCost: product.price * quantity - savings,
-          subPrice: product.price * quantity,
-        };
-        currentProducts[indexOfProductToUpdate] = product;
-        state.cartItems = currentProducts;
-      }
-
-      if (product.qty <= 0) {
-        const filteredProducts = currentProducts.filter(
-          (p) => p.id !== productId
-        );
-        currentProducts[indexOfProductToUpdate] = product;
-        state.cartItems = filteredProducts;
-      }
+      state.cartItems = action.payload;
     },
 
     offersCheck: (state, action) => {
@@ -128,37 +79,48 @@ export const cartSlice = createSlice({
       }
 
       //bread and soup
+      if (productName === "Soup" || productName === "Bread") {
+        const isSoupInCart = currentProducts.some(
+          (product) => product.name === "Soup"
+        );
 
-      const isSoupInCart = currentProducts.some(
-        (product) => product.name === "Soup"
-      );
+        const indexOfProductToUpdate = findIndexOfProduct(
+          currentProducts,
+          "Bread",
+          "name"
+        );
+        const indexOfSoup = findIndexOfProduct(currentProducts, "Soup", "name");
 
-      const indexOfProductToUpdate = findIndexOfProduct(
-        currentProducts,
-        "Bread",
-        "name"
-      );
+        let bread = currentProducts[indexOfProductToUpdate];
+        let soup = currentProducts[indexOfSoup];
 
-      let bread = currentProducts[indexOfProductToUpdate];
+        if (isSoupInCart) {
+          if (bread) {
+            let offer = (bread.price / 2) * soup.qty;
+            let itemCost = bread.qty * bread.price - offer;
 
-      if (isSoupInCart) {
-        if (bread) {
-          // only one bread price is half
-          let offerPrice = bread.price / 2;
-          let itemCost = bread.price * bread.qty - offerPrice;
-          let savings = offerPrice;
+            bread = { ...bread, savings: offer, itemCost };
+            currentProducts[indexOfProductToUpdate] = bread;
+            state.cartItems = currentProducts;
+          }
+          // if (bread) {
+          //   // only one bread price is half
+          //   let offerPrice = bread.price / 2;
+          //   let itemCost = bread.price * bread.qty - offerPrice;
+          //   let savings = offerPrice;
 
-          bread = { ...bread, savings, itemCost };
-          currentProducts[indexOfProductToUpdate] = bread;
-          state.cartItems = currentProducts;
-        }
-      } else {
-        if (bread) {
-          let itemCost = bread.price * bread.qty;
-          bread = { ...bread, savings: 0, itemCost };
-          currentProducts[indexOfProductToUpdate] = bread;
+          //   bread = { ...bread, savings, itemCost };
+          //   currentProducts[indexOfProductToUpdate] = bread;
+          //   state.cartItems = currentProducts;
+          // }
+        } else {
+          if (bread) {
+            let itemCost = bread.price * bread.qty;
+            bread = { ...bread, savings: 0, itemCost };
+            currentProducts[indexOfProductToUpdate] = bread;
 
-          state.cartItems = currentProducts;
+            state.cartItems = currentProducts;
+          }
         }
       }
     },
@@ -174,3 +136,53 @@ export const {
 } = cartSlice.actions;
 
 export default cartSlice.reducer;
+
+export const increaseQty = (id) => async (dispatch, getState) => {
+  const state = getState().cart.cartItems;
+
+  const currentProducts = [...state];
+  const indexOfProductToUpdate = findIndexOfProduct(currentProducts, id, "id");
+
+  let product = currentProducts[indexOfProductToUpdate];
+  const qty = product.qty + 1;
+  const savings = product.savings;
+
+  product = {
+    ...product,
+    qty,
+    itemCost: product.price * qty - savings,
+    subPrice: product.price * qty,
+  };
+  currentProducts[indexOfProductToUpdate] = product;
+
+  dispatch(incrementQty(currentProducts));
+};
+
+export const decreaseQty = (id) => async (dispatch, getState) => {
+  const state = getState().cart.cartItems;
+  const currentProducts = [...state];
+  const indexOfProductToUpdate = findIndexOfProduct(currentProducts, id, "id");
+
+  let product = currentProducts[indexOfProductToUpdate];
+  const quantity = product.qty - 1;
+  const savings = product.savings;
+
+  if (product.qty > 0) {
+    product = {
+      ...product,
+      qty: quantity,
+      itemCost: product.price * quantity - savings,
+      subPrice: product.price * quantity,
+    };
+    currentProducts[indexOfProductToUpdate] = product;
+
+    dispatch(decrementQty(currentProducts));
+  }
+
+  if (product.qty <= 0) {
+    const filteredProducts = currentProducts.filter((p) => p.id !== id);
+    // currentProducts[indexOfProductToUpdate] = product;
+
+    dispatch(decrementQty(filteredProducts));
+  }
+};
