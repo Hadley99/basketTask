@@ -5,12 +5,15 @@ import { useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "./redux/features/productsSlice";
+
 function App() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cartItems);
 
   useEffect(() => {
     dispatch(getAllProducts());
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

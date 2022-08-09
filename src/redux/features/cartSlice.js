@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { findIndexOfProduct } from "../../utils/findIndexOfProduct";
 
 export const cartSlice = createSlice({
@@ -103,16 +103,6 @@ export const cartSlice = createSlice({
             currentProducts[indexOfProductToUpdate] = bread;
             state.cartItems = currentProducts;
           }
-          // if (bread) {
-          //   // only one bread price is half
-          //   let offerPrice = bread.price / 2;
-          //   let itemCost = bread.price * bread.qty - offerPrice;
-          //   let savings = offerPrice;
-
-          //   bread = { ...bread, savings, itemCost };
-          //   currentProducts[indexOfProductToUpdate] = bread;
-          //   state.cartItems = currentProducts;
-          // }
         } else {
           if (bread) {
             let itemCost = bread.price * bread.qty;
