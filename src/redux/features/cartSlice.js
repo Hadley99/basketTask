@@ -64,22 +64,6 @@ export const cartSlice = createSlice({
         currentProducts[indexOfProductToUpdate] = product;
         state.cartItems = filteredProducts;
       }
-
-      const IndexOfCheese = findIndexOfProduct(
-        currentProducts,
-        "Cheese",
-        "name"
-      );
-      const cheese = currentProducts[IndexOfCheese];
-
-      if (cheese) {
-        if (cheese.qty < 2) {
-          const removingCheese = currentProducts.filter(
-            (product) => product.id !== cheese.id
-          );
-          state.cartItems = removingCheese;
-        }
-      }
     },
 
     offersCheck: (state, action) => {
@@ -114,18 +98,6 @@ export const cartSlice = createSlice({
 
         let cheese = currentProducts[indexOfProductToUpdate];
         if (cheese) {
-          if (cheese.qty === 1) {
-            let qty = cheese.qty + 1;
-            let savings = (cheese.price * cheese.qty) / 2;
-            let subPrice = cheese.price * qty;
-            cheese = {
-              ...cheese,
-              qty,
-              savings,
-              subPrice,
-            };
-          }
-
           if (cheese.qty % 2 === 0) {
             let noOfProductsFree = cheese.qty / 2;
             let priceToReduce = noOfProductsFree * cheese.price;
