@@ -19,7 +19,7 @@ export const cartSlice = createSlice({
 
     offersCheck: (state, action) => {
       const productName = action.payload;
-      const currentProducts = state.cartItems;
+      const currentProducts = [...state.cartItems];
 
       if (productName === "Butter") {
         const indexOfProductToUpdate = findIndexOfProduct(
@@ -35,7 +35,6 @@ export const cartSlice = createSlice({
           butter = { ...butter, savings, itemCost };
 
           currentProducts[indexOfProductToUpdate] = butter;
-
           state.cartItems = currentProducts;
         }
       }
@@ -164,15 +163,13 @@ export const decreaseQty = (id) => async (dispatch, getState) => {
       itemCost: product.price * quantity - savings,
       subPrice: product.price * quantity,
     };
-    currentProducts[indexOfProductToUpdate] = product;
 
+    currentProducts[indexOfProductToUpdate] = product;
     dispatch(decrementQty(currentProducts));
   }
 
   if (product.qty <= 0) {
     const filteredProducts = currentProducts.filter((p) => p.id !== id);
-    // currentProducts[indexOfProductToUpdate] = product;
-
     dispatch(decrementQty(filteredProducts));
   }
 };
