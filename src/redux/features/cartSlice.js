@@ -18,100 +18,7 @@ export const cartSlice = createSlice({
     },
 
     offersCheck: (state, action) => {
-      const productName = action.payload;
-      const currentProducts = [...state.cartItems];
-
-      if (productName === "Butter") {
-        const indexOfProductToUpdate = findIndexOfProduct(
-          currentProducts,
-          productName,
-          "name"
-        );
-        let butter = currentProducts[indexOfProductToUpdate];
-        if (butter) {
-          let savings = (butter.price * butter.qty) / 3;
-          let itemCost = butter.price * butter.qty - savings;
-
-          butter = { ...butter, savings, itemCost };
-
-          currentProducts[indexOfProductToUpdate] = butter;
-          state.cartItems = currentProducts;
-        }
-      }
-
-      if (productName === "Cheese") {
-        const indexOfProductToUpdate = findIndexOfProduct(
-          currentProducts,
-          productName,
-          "name"
-        );
-
-        let cheese = currentProducts[indexOfProductToUpdate];
-        if (cheese) {
-          if (cheese.qty % 2 === 0) {
-            let noOfProductsFree = cheese.qty / 2;
-            let priceToReduce = noOfProductsFree * cheese.price;
-            let newPrice = cheese.price * cheese.qty - priceToReduce;
-
-            cheese = {
-              ...cheese,
-              savings: priceToReduce,
-              itemCost: newPrice,
-            };
-          }
-
-          if (cheese.qty % 2 !== 0) {
-            let noOfProductsFree = Math.floor(cheese.qty / 2);
-            let priceToReduce = noOfProductsFree * cheese.price;
-            let newPrice = cheese.price * cheese.qty - priceToReduce;
-
-            cheese = {
-              ...cheese,
-              savings: priceToReduce,
-              itemCost: newPrice,
-            };
-          }
-        }
-
-        currentProducts[indexOfProductToUpdate] = cheese;
-        state.cartItems = currentProducts;
-      }
-
-      //bread and soup
-      if (productName === "Soup" || productName === "Bread") {
-        const isSoupInCart = currentProducts.some(
-          (product) => product.name === "Soup"
-        );
-
-        const indexOfProductToUpdate = findIndexOfProduct(
-          currentProducts,
-          "Bread",
-          "name"
-        );
-        const indexOfSoup = findIndexOfProduct(currentProducts, "Soup", "name");
-
-        let bread = currentProducts[indexOfProductToUpdate];
-        let soup = currentProducts[indexOfSoup];
-
-        if (isSoupInCart) {
-          if (bread) {
-            let offer = (bread.price / 2) * soup.qty;
-            let itemCost = bread.qty * bread.price - offer;
-
-            bread = { ...bread, savings: offer, itemCost };
-            currentProducts[indexOfProductToUpdate] = bread;
-            state.cartItems = currentProducts;
-          }
-        } else {
-          if (bread) {
-            let itemCost = bread.price * bread.qty;
-            bread = { ...bread, savings: 0, itemCost };
-            currentProducts[indexOfProductToUpdate] = bread;
-
-            state.cartItems = currentProducts;
-          }
-        }
-      }
+      state.cartItems = action.payload;
     },
   },
 });
@@ -134,12 +41,11 @@ export const increaseQty = (id) => async (dispatch, getState) => {
 
   let product = currentProducts[indexOfProductToUpdate];
   const qty = product.qty + 1;
-  const savings = product.savings;
 
   product = {
     ...product,
     qty,
-    itemCost: product.price * qty - savings,
+    itemCost: product.price * qty - product.savings,
     subPrice: product.price * qty,
   };
   currentProducts[indexOfProductToUpdate] = product;
@@ -153,15 +59,14 @@ export const decreaseQty = (id) => async (dispatch, getState) => {
   const indexOfProductToUpdate = findIndexOfProduct(currentProducts, id, "id");
 
   let product = currentProducts[indexOfProductToUpdate];
-  const quantity = product.qty - 1;
-  const savings = product.savings;
+  const qty = product.qty - 1;
 
   if (product.qty > 0) {
     product = {
       ...product,
-      qty: quantity,
-      itemCost: product.price * quantity - savings,
-      subPrice: product.price * quantity,
+      qty,
+      itemCost: product.price * qty - product.savings,
+      subPrice: product.price * qty,
     };
 
     currentProducts[indexOfProductToUpdate] = product;
@@ -171,5 +76,99 @@ export const decreaseQty = (id) => async (dispatch, getState) => {
   if (product.qty <= 0) {
     const filteredProducts = currentProducts.filter((p) => p.id !== id);
     dispatch(decrementQty(filteredProducts));
+  }
+};
+
+export const checkForOffers = (name) => (dispatch, getState) => {
+  const state = getState().cart.cartItems;
+  const currentProducts = [...state];
+  if (name === "Butter") {
+    const indexOfProductToUpdate = findIndexOfProduct(
+      currentProducts,
+      name,
+      "name"
+    );
+    let butter = currentProducts[indexOfProductToUpdate];
+    if (butter) {
+      let savings = (butter.price * butter.qty) / 3;
+      let itemCost = butter.price * butter.qty - savings;
+
+      butter = { ...butter, savings, itemCost };
+
+      currentProducts[indexOfProductToUpdate] = butter;
+      dispatch(offersCheck(currentProducts));
+    }
+  }
+  if (name === "Cheese") {
+    const indexOfProductToUpdate = findIndexOfProduct(
+      currentProducts,
+      name,
+      "name"
+    );
+
+    let cheese = currentProducts[indexOfProductToUpdate];
+    if (cheese) {
+      if (cheese.qty % 2 === 0) {
+        let noOfProductsFree = cheese.qty / 2;
+        let priceToReduce = noOfProductsFree * cheese.price;
+        let newPrice = cheese.price * cheese.qty - priceToReduce;
+
+        cheese = {
+          ...cheese,
+          savings: priceToReduce,
+          itemCost: newPrice,
+        };
+      }
+
+      if (cheese.qty % 2 !== 0) {
+        let noOfProductsFree = Math.floor(cheese.qty / 2);
+        let priceToReduce = noOfProductsFree * cheese.price;
+        let newPrice = cheese.price * cheese.qty - priceToReduce;
+
+        cheese = {
+          ...cheese,
+          savings: priceToReduce,
+          itemCost: newPrice,
+        };
+      }
+    }
+
+    currentProducts[indexOfProductToUpdate] = cheese;
+    dispatch(offersCheck(currentProducts));
+  }
+
+  if (name === "Soup" || name === "Bread") {
+    const isSoupInCart = currentProducts.some(
+      (product) => product.name === "Soup"
+    );
+
+    const indexOfProductToUpdate = findIndexOfProduct(
+      currentProducts,
+      "Bread",
+      "name"
+    );
+    const indexOfSoup = findIndexOfProduct(currentProducts, "Soup", "name");
+
+    let bread = currentProducts[indexOfProductToUpdate];
+    let soup = currentProducts[indexOfSoup];
+
+    if (isSoupInCart) {
+      if (bread) {
+        let offer = (bread.price / 2) * soup.qty;
+        let itemCost = bread.qty * bread.price - offer;
+
+        bread = { ...bread, savings: offer, itemCost };
+        currentProducts[indexOfProductToUpdate] = bread;
+        dispatch(offersCheck(currentProducts));
+      }
+    } else {
+      if (bread) {
+        let itemCost = bread.price * bread.qty;
+        bread = { ...bread, savings: 0, itemCost };
+        currentProducts[indexOfProductToUpdate] = bread;
+
+        dispatch(offersCheck(currentProducts));
+      }
+    }
   }
 };

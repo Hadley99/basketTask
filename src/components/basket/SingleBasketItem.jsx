@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import {
+  checkForOffers,
   decreaseQty,
   increaseQty,
-  offersCheck,
 } from "../../redux/features/cartSlice";
 import Button from "../common/Button";
 import { useDispatch } from "react-redux";
@@ -11,8 +11,8 @@ const SingleBasketItem = ({ product }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(offersCheck(product.name));
-    return () => dispatch(offersCheck(product.name));
+    dispatch(checkForOffers(product.name));
+    return () => dispatch(checkForOffers(product.name));
   }, [product.qty]);
 
   return (
@@ -44,6 +44,7 @@ const SingleBasketItem = ({ product }) => {
           <p className="text-red-600 text-end mt-4 font-medium">
             Savings: £ {product.savings.toFixed(2)}
           </p>
+
           <hr />
         </>
       )}
